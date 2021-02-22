@@ -1,0 +1,48 @@
+- name: Check if CoreDNS is installed
+  stat:
+    path: /usr/local/bin/coredns
+  register: coredns_binary
+
+- name: Download and install CoreDNS
+  when: coredns_binary.stat.exists == false
+  unarchive:
+    src: https://github.com/coredns/coredns/releases/download/v{{ coredns.version }}/coredns_{{ coredns.version }}_linux_amd64.tgz
+    dest: /usr/local/bin/
+    remote_src: yes
+    mode: 744
+
+- name: Make a directory for CoreDNS
+  file:
+    path: /etc/coredns
+    state: directory
+
+- name: Configure CoreDNS
+  tags: wireguard
+  template:
+    src: ./templates/coredns/config
+    dest: /etc/coredns/Corefile
+
+- name: Configure CoreDNS private hosts
+  tags: wireguard
+  template:
+    src: ./templates/coredns/private_hosts
+    dest: /etc/coredns/private_hosts
+
+- name: Install CoreDNS service file
+  template:
+    src: ./templates/coredns/service
+    dest: /etc/systemd/system/coredns.service
+
+- name: Disable systemd-resolved
+  systemd:
+    name: systemd-resolved
+    state: stopped
+    enabled: no
+
+- name: Enable CoreDNS
+  tags: wireguard
+  systemd:
+    name: coredns
+    enabled: true
+    state: restarted
+    daemon_reload: true

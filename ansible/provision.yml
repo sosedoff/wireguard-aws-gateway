@@ -1,0 +1,14 @@
+- hosts: all
+  gather_facts: false
+
+  vars_files:
+    - vars.yml
+
+  pre_tasks:
+    - action: setup
+      tags: setup
+
+  tasks:
+    - include: ./tasks/base.yml
+    - include: ./tasks/coredns.yml
+    - include: ./tasks/wireguard.yml

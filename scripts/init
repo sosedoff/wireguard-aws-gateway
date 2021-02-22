@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+set -e
+
+tf_vars="./terraform/terraform.tfvars"
+ansible_vars="./ansible/vars.yml"
+ssh_key="./ansible/keys/ssh"
+wg_key="./ansible/keys/wireguard"
+wg_client_key="./ansible/keys/wireguard_client"
+
+if [ ! -f $ssh_key ]; then
+  echo "Generating a new SSH key: $ssh_key"
+  ssh-keygen -o -t rsa -b 4096 -f $ssh_key -N "" -C "wireguard-gateway"
+else
+  echo "SSH key already exists, skipping"
+fi
+
+if [ ! -f $wg_key ]; then
+  echo "Generating a new Wireguard key: $wg_key"
+  umask 077
+  wg genkey > $wg_key
+  wg pubkey < $wg_key > $wg_key.pub
+else
+  echo "Wireguard key already exists, skipping"
+fi
+
+if [ ! -f $wg_client_key ]; then
+  echo "Generating a new Wireguard client key: $wg_client_key"
+  umask 077
+  wg genkey > $wg_client_key
+  wg pubkey < $wg_client_key > $wg_client_key.pub
+else
+  echo "Wireguard client key already exists, skipping"
+fi
+
+if [ ! -f $tf_vars ]; then
+  echo "Creating Terraform variables file: $tf_vars"
+  cat ./terraform/terraform.tfvars.example > $tf_vars
+else
+  echo "Terraform vars file already exists, skipping"
+fi
+
+if [ ! -f $ansible_vars ]; then
+  echo "Creating Ansible variables file: $ansible_vars"
+  cat ./ansible/vars.yml.example \
+    | sed "s/SERVER_PRIVATE_KEY/$(cat $wg_key | sed 's/\//\\\//g')/g" \
+    | sed "s/SERVER_PUBLIC_KEY/$(cat $wg_key.pub | sed 's/\//\\\//g')/g" \
+    | sed "s/CLIENT_PUBLIC_KEY/$(cat $wg_client_key.pub | sed 's/\//\\\//g')/g" \
+  > $ansible_vars
+else
+  echo "Ansible vars file already exists, skipping"
+fi

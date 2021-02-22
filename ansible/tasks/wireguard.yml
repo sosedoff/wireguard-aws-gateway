@@ -1,0 +1,16 @@
+- name: Configure wireguard tunnel
+  tags: wireguard
+  template:
+    src: ./templates/wireguard/server.conf
+    dest: "/etc/wireguard/{{ gateway.tunnel }}.conf"
+    owner: root
+    group: root
+
+- name: Stop Wireguard interface
+  tags: wireguard
+  shell: "wg-quick down {{ gateway.tunnel }}"
+  ignore_errors: yes
+
+- name: Start Wireguard interface
+  tags: wireguard
+  shell: "wg-quick up {{ gateway.tunnel }}"

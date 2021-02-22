@@ -1,0 +1,40 @@
+gateway:
+  # Wireguard server private/public keys. These keys should be generated.
+  # Use a tool `wg` to generate a different set if necessary.
+  private_key: "SERVER_PRIVATE_KEY"
+  public_key: "SERVER_PUBLIC_KEY"
+
+  # Name of the tunnel network interface.
+  tunnel: "wg0"
+
+  # Name of the network interface to forward traffic to.
+  # Usually `eth0` but different on AWS.
+  interface: "ens5"
+
+  # VPN network range. Should not overlap with VPC CIDR!
+  network: "10.10.0.0/24"
+
+  # Wireguard listen address. This is the default.
+  listen_port: "51820"
+
+  # Optional keepalive setting for sensitive clients.
+  persistent_keepalive: "60"
+
+  # List of client peers you would like to connect with.
+  # These keys should be provided by clients or generated with `wg` toolkit.
+  peers:
+    - name: user1
+      public_key: "CLIENT_PUBLIC_KEY"
+      addr: "10.10.0.1"
+
+coredns:
+  # Version of the coredns binary
+  version: "1.8.1"
+
+  # AWS provides a resolver on address equals to VPC base range + 2.
+  # If VPC CIDR is 10.0.0.0/16 then resolver is available on 10.0.0.2.
+  forward_to: "10.0.0.2"
+
+  # If private zone name is provided all peers from the section above will
+  # get their own DNS entries, like `user1.private`, etc.
+  private_zone: "private"

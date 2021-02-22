@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+echo "Fetching private ip"
+gateway_private_ip=$(terraform -chdir=./terraform output -raw gateway_private_ip)
+echo $gateway_private_ip
+ping -c 1 $gateway_private_ip
+
+echo "Fetching private DNS"
+gateway_private_dns=$(terraform -chdir=./terraform output -raw gateway_private_dns)
+echo $gateway_private_dns
+ping -c 1 $gateway_private_dns
+
+echo "Pinging our own user"
+ping -c 1 user1.private

@@ -1,0 +1,23 @@
+- name: Update package cache
+  apt:
+    update_cache: true
+
+- name: Install basic packages
+  apt:
+    state: present
+    pkg:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+      - net-tools
+      - ufw
+      - fail2ban
+      - wireguard
+
+- name: Enable IPV4 forwarding
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: "1"
+    state: present
+    sysctl_set: yes

@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+set -e
+
+tags="$1"
+output_name="gateway_public_ip"
+hosts_path="./ansible/hosts"
+
+if [ ! -z $tags ]; then
+  tags="-t setup,$tags"
+fi
+
+if [ ! -e $hosts_path ]; then
+  echo "Getting gateway public IP"
+  gateway_ip=$(terraform -chdir=./terraform output -raw $output_name)
+  echo "Public gateway IP: ${gateway_ip}"
+
+  echo "Making a new hosts file"
+  sed "s/HOSTIP/$gateway_ip/g" ./ansible/hosts.example > $hosts_path
+  echo "Hosts file generated: $hosts_path"
+else
+  echo "Ansible hosts already created, skipping"
+fi
+
+pushd ansible
+ansible-playbook -i hosts $tags provision.yml
+popd
