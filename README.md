@@ -14,7 +14,7 @@ Key features:
 ## Requirements
 
 - Ansible 2.x
-- Terraform 0.14.x
+- Terraform 1.0.x
 - Wireguard Tools
 - AWS Account
 
