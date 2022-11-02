@@ -4,7 +4,7 @@ module "vpc_main" {
   name                 = "wireguard"
   cidr                 = var.vpc_cidr
   public_subnets       = var.vpc_public_subnets
-  azs                  = ["us-east-1a", "us-east-1b", "us-east-1c"]
+  azs                  = var.vpc_azs
   enable_dns_hostnames = true
 }
 

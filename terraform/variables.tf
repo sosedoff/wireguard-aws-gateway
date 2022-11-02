@@ -18,6 +18,11 @@ variable "vpc_public_subnets" {
   default = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
 }
 
+// Availability zones withing region
+variable "vpc_azs" {
+  default = ["us-east-1a", "us-east-1b", "us-east-1c"]
+}
+
 // Gateway instance SSH public key
 variable "gateway_ssh_public_key" {
   default = "../ansible/keys/ssh.pub"
