@@ -9,7 +9,7 @@
 - name: Stop Wireguard interface
   tags: wireguard
   shell: "wg-quick down {{ gateway.tunnel }}"
-  ignore_errors: yes
+  ignore_errors: True
 
 - name: Start Wireguard interface
   tags: wireguard
