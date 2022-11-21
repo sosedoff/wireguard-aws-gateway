@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -e
+
+host=$(cd terraform && terraform output -raw gateway_public_ip)
+
+ssh ubuntu@$host -i ./ansible/keys/ssh
